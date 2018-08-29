@@ -8,3 +8,14 @@
 .section {
   padding: 1rem 1.5rem;
 }
+
+html, body {
+  overflow: hidden;
+}
+
+body {
+  overflow: hidden;
+  position: relative;
+  margin: 0;
+  padding: 0;
+}

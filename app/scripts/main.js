@@ -7,7 +7,6 @@ Config.appSecret = 'SzwwjMuQnxu9QqStwvMsIDV9W'
 Config.topic = '/gearname/topic1'
 Config.alias = 'web1'
 
-console.log(Config)
 microgear = Microgear.create({
   key: Config.appKey,
   secret: Config.appSecret,
@@ -56,6 +55,7 @@ function connect_netpie () {
       console.log('wating... ', Global.timeoutOn - currentTime)
     }
   }, 100)
+
   microgear.resettoken(function (err) {
     if (err) {
       console.log('reset token err', err)
@@ -70,6 +70,8 @@ var player_walk
 var player_stand
 var mouse_moved = false
 var touch_started = false
+var sleep
+var x = 0
 
 function preload () {
   var player_frames = [
@@ -93,7 +95,15 @@ function preload () {
   player_stand = loadAnimation(new SpriteSheet('images/player_spritesheet.png',
     [{'name': 'player_stand', 'frame': {'x': 284, 'y': 95, 'width': 70, 'height': 94}}]))
 
+  sleep = loadAnimation('images/asterisk_stretching0001.png', 'images/asterisk_stretching0008.png')
+
 }
+
+var startX
+var startY
+
+var endX
+var endY
 
 function setup () {
   createCanvas(windowWidth, windowHeight)
@@ -104,37 +114,49 @@ function setup () {
 
 function draw () {
   clear()
-  background(0)
+  // background(0)
   var eventX
   if (isTouch()) {
     eventX = touchX
   } else {
     eventX = mouseX
   }
-  player_sprite.changeAnimation('walk')
-  player_sprite.velocity.x = 2
-  player_sprite.mirrorX(-1)
-  //if mouse is to the left
-  if (eventX < player_sprite.position.x - 10) {
-    player_sprite.changeAnimation('walk')
-    // flip horizontally
 
-    // move left
-    player_sprite.velocity.x = -2
-  }
-  else if (eventX > player_sprite.position.x + 10) {
-    player_sprite.changeAnimation('walk')
-    // flip horizontally
-    player_sprite.mirrorX(1)
-    // move right
-    player_sprite.velocity.x = 2
-  }
-  else {
-    player_sprite.changeAnimation('stand')
-    //if close to the mouse, don't move
-    player_sprite.velocity.x = 0
-  }
+  // text('touchStarted: mouseX = ' + round(startX) + ' mouseY = ' + round(startY), 0, .2 * height)
+  text(`hello x=${player_sprite.position.x}`, 10, .4 * height)
+  // text('draw: mouseX = ' + round(mouseX) + ' mouseY = ' + round(mouseY), 0, .6 * height)
 
+  // player_sprite.changeAnimation('walk')
+  // player_sprite.velocity.x = 2
+  // player_sprite.mirrorX(-1)
+  // //if mouse is to the left
+  // if (eventX < player_sprite.position.x - 10) {
+  //   player_sprite.changeAnimation('walk')
+  //   // flip horizontally
+  //
+  //   // move left
+  //   // player_sprite.velocity.x = -2
+  // }
+  // else if (eventX > player_sprite.position.x + 10) {
+  //   player_sprite.changeAnimation('walk')
+  //   // flip horizontally
+  //   player_sprite.mirrorX(1)
+  //   // move right
+  //   // player_sprite.velocity.x = 2
+  // }
+  // else {
+  //   player_sprite.changeAnimation('stand')
+  //   //if close to the mouse, don't move
+  //   player_sprite.velocity.x = 0
+  // }
+
+  //playing an pausing an animation
+  if (mouseIsPressed)
+    sleep.play()
+  else
+    sleep.stop()
+
+  // animation(sleep, 100, 150)
   //draw the sprite
   drawSprites()
 }
@@ -148,6 +170,39 @@ function mouseMoved () {
 }
 
 function isTouch () {
+  // player_sprite.position.x++
   return touch_started && !mouse_moved
 }
 
+function mousePressed () {
+  player_sprite.position.x++
+  //create a sprite
+  var splat = createSprite(mouseX, mouseY)
+  splat.addAnimation('normal', 'images/asterisk_explode0001.png', 'images/asterisk_explode0011.png')
+
+  //set a self destruction timer (life)
+  splat.life = 10
+}
+
+function mouseReleased () {
+  // console.log('mouse released.')
+}
+
+function touchStarted () {
+  player_sprite.position.x++
+  startX = mouseX
+  startY = mouseY
+
+  var splat = createSprite(startX, startY)
+  splat.addAnimation('normal', 'images/asterisk_explode0001.png', 'images/asterisk_explode0011.png')
+
+  //set a self destruction timer (life)
+  splat.life = 10
+  return false
+}
+
+function touchEnded () {
+  endX = mouseX
+  endY = mouseY
+  return false
+}
