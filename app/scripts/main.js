@@ -65,144 +65,123 @@ function connect_netpie () {
   })
 }
 
-var player_sprite_sheet
-var player_walk
-var player_stand
-var mouse_moved = false
-var touch_started = false
-var sleep
-var x = 0
+//flappy bird-like
+//mouse click or x to flap
 
-function preload () {
-  var player_frames = [
-    {'name': 'player_walk01', 'frame': {'x': 0, 'y': 0, 'width': 70, 'height': 94}},
-    {'name': 'player_walk02', 'frame': {'x': 71, 'y': 0, 'width': 70, 'height': 94}},
-    {'name': 'player_walk03', 'frame': {'x': 142, 'y': 0, 'width': 70, 'height': 94}},
-    {'name': 'player_walk04', 'frame': {'x': 0, 'y': 95, 'width': 70, 'height': 94}},
-    {'name': 'player_walk05', 'frame': {'x': 71, 'y': 95, 'width': 70, 'height': 94}},
-    {'name': 'player_walk06', 'frame': {'x': 142, 'y': 95, 'width': 70, 'height': 94}},
-    {'name': 'player_walk07', 'frame': {'x': 213, 'y': 0, 'width': 70, 'height': 94}},
-    {'name': 'player_walk08', 'frame': {'x': 284, 'y': 0, 'width': 70, 'height': 94}},
-    {'name': 'player_walk09', 'frame': {'x': 213, 'y': 95, 'width': 70, 'height': 94}},
-    {'name': 'player_walk10', 'frame': {'x': 355, 'y': 0, 'width': 70, 'height': 94}},
-    {'name': 'player_walk11', 'frame': {'x': 284, 'y': 95, 'width': 70, 'height': 94}}
-  ]
-
-  player_sprite_sheet = loadSpriteSheet('images/player_spritesheet.png', player_frames)
-  player_walk = loadAnimation(player_sprite_sheet)
-
-  // An animation with a single frame for standing
-  player_stand = loadAnimation(new SpriteSheet('images/player_spritesheet.png',
-    [{'name': 'player_stand', 'frame': {'x': 284, 'y': 95, 'width': 70, 'height': 94}}]))
-
-  sleep = loadAnimation('images/asterisk_stretching0001.png', 'images/asterisk_stretching0008.png')
-
-}
-
-var startX
-var startY
-
-var endX
-var endY
+var GRAVITY = 0.3
+var FLAP = -7
+var GROUND_Y = 450
+var MIN_OPENING = 300
+var bird, ground
+var pipes
+var gameOver
+var birdImg, pipeImg, groundImg, bgImg
 
 function setup () {
-  createCanvas(windowWidth, windowHeight)
-  player_sprite = createSprite(100, 284, 70, 94)
-  player_sprite.addAnimation('walk', player_walk)
-  player_sprite.addAnimation('stand', player_stand)
+  createCanvas(400, 600)
+
+  birdImg = loadImage('assets/flappy_bird.png')
+  pipeImg = loadImage('assets/flappy_pipe.png')
+  groundImg = loadImage('assets/flappy_ground.png')
+  bgImg = loadImage('assets/flappy_bg.png')
+
+  bird = createSprite(width / 2, height / 2, 40, 40)
+  bird.rotateToDirection = true
+  bird.velocity.x = 4
+  bird.setCollider('circle', 0, 0, 20)
+  bird.addImage(birdImg)
+
+  ground = createSprite(800 / 2, GROUND_Y + 100) //image 800x200
+  ground.addImage(groundImg)
+
+  pipes = new Group()
+  gameOver = true
+  updateSprites(false)
+
+  camera.position.y = height / 2
 }
 
 function draw () {
-  clear()
-  // background(0)
-  var eventX
-  if (isTouch()) {
-    eventX = touchX
-  } else {
-    eventX = mouseX
+
+  if (gameOver && keyWentDown('x'))
+    newGame()
+
+  if (!gameOver) {
+
+    if (keyWentDown('x'))
+      bird.velocity.y = FLAP
+
+    bird.velocity.y += GRAVITY
+
+    if (bird.position.y < 0)
+      bird.position.y = 0
+
+    if (bird.position.y + bird.height / 2 > GROUND_Y)
+      die()
+
+    if (bird.overlap(pipes))
+      die()
+
+    //spawn pipes
+    if (frameCount % 60 == 0) {
+      var pipeH = random(50, 300)
+      var pipe = createSprite(bird.position.x + width, GROUND_Y - pipeH / 2 + 1 + 100, 80, pipeH)
+      pipe.addImage(pipeImg)
+      pipes.add(pipe)
+
+      //top pipe
+      if (pipeH < 200) {
+        pipeH = height - (height - GROUND_Y) - (pipeH + MIN_OPENING)
+        pipe = createSprite(bird.position.x + width, pipeH / 2 - 100, 80, pipeH)
+        pipe.mirrorY(-1)
+        pipe.addImage(pipeImg)
+        pipes.add(pipe)
+      }
+    }
+
+    //get rid of passed pipes
+    for (var i = 0; i < pipes.length; i++)
+      if (pipes[i].position.x < bird.position.x - width / 2)
+        pipes[i].remove()
   }
 
-  // text('touchStarted: mouseX = ' + round(startX) + ' mouseY = ' + round(startY), 0, .2 * height)
-  text(`hello x=${player_sprite.position.x}`, 10, .4 * height)
-  // text('draw: mouseX = ' + round(mouseX) + ' mouseY = ' + round(mouseY), 0, .6 * height)
+  camera.position.x = bird.position.x + width / 4
 
-  // player_sprite.changeAnimation('walk')
-  player_sprite.velocity.x = 2
-  // player_sprite.mirrorX(-1)
-  // //if mouse is to the left
-  // if (eventX < player_sprite.position.x - 10) {
-  //   player_sprite.changeAnimation('walk')
-  //   // flip horizontally
-  //
-  //   // move left
-  //   // player_sprite.velocity.x = -2
-  // }
-  // else if (eventX > player_sprite.position.x + 10) {
-  //   player_sprite.changeAnimation('walk')
-  //   // flip horizontally
-  //   player_sprite.mirrorX(1)
-  //   // move right
-  //   // player_sprite.velocity.x = 2
-  // }
-  // else {
-  //   player_sprite.changeAnimation('stand')
-  //   //if close to the mouse, don't move
-  //   player_sprite.velocity.x = 0
-  // }
+  //wrap ground
+  if (camera.position.x > ground.position.x - ground.width + width / 2)
+    ground.position.x += ground.width
 
-  //playing an pausing an animation
-  if (mouseIsPressed)
-    sleep.play()
-  else
-    sleep.stop()
+  background(247, 134, 131)
+  camera.off()
+  image(bgImg, 0, GROUND_Y - 190)
+  camera.on()
 
-  // animation(sleep, 100, 150)
-  //draw the sprite
-  drawSprites()
+  drawSprites(pipes)
+  drawSprite(ground)
+  drawSprite(bird)
 }
 
-function touchStarted () {
-  touch_started = true
+function die () {
+  updateSprites(false)
+  gameOver = true
 }
 
-function mouseMoved () {
-  mouse_moved = true
-}
-
-function isTouch () {
-  // player_sprite.position.x++
-  return touch_started && !mouse_moved
+function newGame () {
+  pipes.removeSprites()
+  gameOver = false
+  updateSprites(true)
+  bird.position.x = width / 2
+  bird.position.y = height / 2
+  bird.velocity.y = 0
+  ground.position.x = 800 / 2
+  ground.position.y = GROUND_Y + 100
 }
 
 function mousePressed () {
-  player_sprite.position.x++
-  //create a sprite
-  var splat = createSprite(mouseX, mouseY)
-  splat.addAnimation('normal', 'images/asterisk_explode0001.png', 'images/asterisk_explode0011.png')
-
-  //set a self destruction timer (life)
-  splat.life = 10
+  if (gameOver)
+    newGame()
+  bird.velocity.y = FLAP
 }
 
-function mouseReleased () {
-  // console.log('mouse released.')
-}
 
-function touchStarted () {
-  player_sprite.position.x++
-  startX = mouseX
-  startY = mouseY
 
-  var splat = createSprite(startX, startY)
-  splat.addAnimation('normal', 'images/asterisk_explode0001.png', 'images/asterisk_explode0011.png')
-
-  //set a self destruction timer (life)
-  splat.life = 10
-  return false
-}
-
-function touchEnded () {
-  endX = mouseX
-  endY = mouseY
-  return false
-}
