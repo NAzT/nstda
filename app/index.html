@@ -58,8 +58,6 @@
   jQuery('document').ready(function ($) {
     document.body.addEventListener('touchstart', function (e) { e.preventDefault() })
     connect_netpie()
-    // var topic = $('#topic-input').val()
-    // var payload = $('#payload-input').val()
     $('.publish-on-button').click(function () {
       microgear.publish(Config.topic, 'ON')
     })

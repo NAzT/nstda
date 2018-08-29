@@ -15,7 +15,7 @@ microgear = Microgear.create({
 microgear.on('connected', function () {
   console.log('netpie connected')
   microgear.setAlias(Config.alias)
-  microgear.subscribe('/gearname/+')
+  microgear.subscribe('/gearname/#')
   clearInterval(Global.timer1)
   hideNetpieConnectingIcon()
   $('#incoming-messages').html('connected')
@@ -30,10 +30,10 @@ microgear.on('absent', function (event) {
 })
 
 microgear.on('message', function (topic, msg) {
-  const $p = $('<p class="title">' + msg + '</p>')
-  var dateString = moment().format('h:mm:ss a')
-  $('#incoming-messages').html($p)
-  $('.message-header-text').text('[' + dateString + '] Message: ' + topic)
+  // console.log('on messgage', topic)
+  if (gameOver)
+    newGame()
+  bird.velocity.y = FLAP
 })
 
 function hideNetpieConnectingIcon () {
