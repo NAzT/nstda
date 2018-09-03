@@ -66,6 +66,7 @@ var player_walk;
 var player_stand;
 var mouse_moved = false;
 var touch_started = false;
+
 function preload() {
   var player_frames = [
     {
@@ -126,8 +127,6 @@ function preload() {
         'frame': {'x': 284, 'y': 95, 'width': 70, 'height': 94},
       }]));
 
-  // wheelAnimation = loadAnimation('images/wheel_0001.png',
-  //   'images/wheel_0004.png');
 }
 
 var startX;
@@ -146,10 +145,6 @@ function setup() {
   player_sprite = createSprite(100, 284, 70, 94);
   player_sprite.addAnimation('walk', player_walk);
   player_sprite.addAnimation('stand', player_stand);
-
-  // wheelAnimation = createSprite(0, 0);
-  // wheelAnimation.addAnimation('normal', 'images/wheel_0001.png',
-  //   'images/wheel_0004.png');
 }
 
 function draw() {
@@ -165,33 +160,7 @@ function draw() {
     eventX = mouseX;
   }
 
-
   text(`hello x=${player_sprite.position.x}`, 10, .4 * height);
-  // player_sprite.changeAnimation('walk')
-  // player_sprite.velocity.x = 2;
-  // player_sprite.mirrorX(-1)
-  // //if mouse is to the left
-  // if (eventX < player_sprite.position.x - 10) {
-  //   player_sprite.changeAnimation('walk')
-  //   // flip horizontally
-  //
-  //   // move left
-  //   // player_sprite.velocity.x = -2
-  // }
-  // else if (eventX > player_sprite.position.x + 10) {
-  //   player_sprite.changeAnimation('walk')
-  //   // flip horizontally
-  //   player_sprite.mirrorX(1)
-  //   // move right
-  //   // player_sprite.velocity.x = 2
-  // }
-  // else {
-  //   player_sprite.changeAnimation('stand')
-  //   //if close to the mouse, don't move
-  //   player_sprite.velocity.x = 0
-  // }
-// animation(sleep, 100, 150)
-  //draw the sprite
   drawSprites();
 }
 
