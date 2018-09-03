@@ -7,6 +7,8 @@
   <title>nstda</title>
 
   <meta name="viewport" content="user-scalable=no">
+  <script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
+          crossorigin="anonymous"></script>
 
   <!-- build:css styles/vendor.css -->
   <!-- bower:css -->
@@ -38,9 +40,6 @@
 
 
 <!-- build:js scripts/vendor.js -->
-<script src="/bower_components/jquery/dist/jquery.min.js"></script>
-<script src="/bower_components/moment/moment.js"></script>
-<script src="/bower_components/moment-timezone/moment-timezone.js"></script>
 <!-- bower:js -->
 <!-- endbower -->
 <!-- endbuild -->
@@ -55,16 +54,16 @@
 
 
 <script type="text/javascript">
-  jQuery('document').ready(function ($) {
-    document.body.addEventListener('touchstart', function (e) { e.preventDefault() })
-    connect_netpie()
-    $('.publish-on-button').click(function () {
-      microgear.publish(Config.topic, 'ON')
-    })
-    $('.publish-off-button').click(function () {
-      microgear.publish(Config.topic, 'OFF')
-    })
-  })
+  jQuery('document').ready(function($) {
+    document.body.addEventListener('touchstart', function(e) { e.preventDefault(); });
+    connect_netpie();
+    $('.publish-on-button').click(function() {
+      microgear.publish(Config.topic, 'ON');
+    });
+    $('.publish-off-button').click(function() {
+      microgear.publish(Config.topic, 'OFF');
+    });
+  });
 </script>
 </body>
 </html>

@@ -30,6 +30,7 @@ microgear.on('absent', function(event) {
 });
 
 microgear.on('message', function(topic, msg) {
+
 });
 
 function hideNetpieConnectingIcon() {
