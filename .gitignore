@@ -9,3 +9,8 @@ app/bower_components
 # System Files
 .DS_Store
 Thumbs.db
+.idea/misc.xml
+.idea/modules.xml
+.idea/nstda.iml
+.idea/vcs.xml
+.idea/workspace.xml

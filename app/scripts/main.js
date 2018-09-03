@@ -179,7 +179,7 @@ function isTouch() {
 }
 
 function mousePressed() {
-  player_sprite.position.x++;
+  player_sprite.position.x+=50;
   //create a sprite
   var splat = createSprite(mouseX, mouseY);
   splat.addAnimation('normal', 'images/asterisk_explode0001.png',
